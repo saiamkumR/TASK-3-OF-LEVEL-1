@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculator</title>
+    <style>
+        .calculator {
+            width: 300px;
+            margin: 0 auto;
+            border: 1px solid black;
+            border-radius: 5px;
+            padding: 20px;
+        }
+
+        #display {
+            width: 100%;
+            padding: 10px;
+            text-align: right;
+            font-size: 20px;
+            border: 1px solid black;
+            border-radius: 5px;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 18px;
+            border: 1px solid black;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <input type="text" id="display" disabled>
+        <div class="buttons">
+            <button class="operator" data-value="+">+</button>
+            <button class="operator" data-value="-">-</button>
+            <button class="operator" data-value="*">*</button>
+            <button class="operator" data-value="/">/</button>
+            <button class="number" data-value="7">7</button>
+            <button class="number" data-value="8">8</button>
+            <button class="number" data-value="9">9</button>
+            <button class="number" data-value="4">4</button>
+            <button class="number" data-value="5">5</button>
+            <button class="number" data-value="6">6</button>
+            <button class="number" data-value="1">1</button>
+            <button class="number" data-value="2">2</button>
+            <button class="number" data-value="3">3</button>
+            <button class="number" data-value="0">0</button>
+            <button class="decimal" data-value=".">.</button>
+            <button class="clear" data-value="clear">C</button>
+            <button class="equal" data-value="=">=</button>
+        </div>
+    </div>
+    <script>
+        const display = document.getElementById('display');
+        const buttons = document.querySelectorAll('button');
+
+        document.addEventListener('keydown', (event) => {
+            const key = event.key;
+
+            if (/\d/.test(key)) {
+                display.value += key;
+            } else if (key === '.') {
+                display.value += '.';
+            } else if (['+', '-', '*', '/', '='].includes(key)) {
+                display.value += key;
+            } else if (key === 'c' || key === 'C') {
+                display.value = '';
+            } else if (key === 'Backspace') {
+                display.value = display.value.slice(0, -1);
+            }
+        });
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const value = button.dataset.value;
+
+                if (value === '=') {
+                    try {
+                        display.value = evaluateExpression(display.value);
+                    } catch (error) {
+                        display.value = 'Error';
+                    }
+                } else if (value === 'clear') {
+                    display.value = '';
+                } else {
+                    display.value += value;
+                }
+            });
+        });
+
+        function evaluateExpression(expression) {
+            // Implement a basic expression parser here
+            // This is a simplified example and can be improved for more complex expressions
+            const tokens = expression.split('');
+            let result = 0;
+            let currentOp = '+';
+
+            for (let i = 0; i < tokens.length; i++) {
+                const token = tokens[i];
+
+                if (/\d/.test(token)) {
+                    let num = parseInt(token);
+                    while (i + 1 < tokens.length && /\d/.test(tokens[i + 1])) {
+                        num = num * 10 + parseInt(tokens[i + 1]);
+                        i++;
+                    }
+
+                    switch (currentOp) {
+                        case '+':
+                            result += num;
+                            break;
+                        case '-':
+                            result -= num;
+                            break;
+                        case '*':
+                            result *= num;
+                            break;
+                        case '/':
+                            result /= num;
+                            break;
+                    }
+                } else {
+                    currentOp = token;
+                }
+            }
+
+            return result;
+        }
+    </script>
+</body>
+</html>
